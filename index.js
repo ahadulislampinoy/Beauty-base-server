@@ -34,11 +34,18 @@ async function run() {
       const result = await services.toArray();
       res.send(result);
     });
+
     app.get("/services/:id", async (req, res) => {
       const id = req.params.id;
       const query = { _id: ObjectId(id) };
       const services = await serviceCollection.findOne(query);
       res.send(services);
+    });
+
+    app.post("/services", async (req, res) => {
+      const service = req.body;
+      const result = await serviceCollection.insertOne(service);
+      res.send(result);
     });
 
     // Reviews
@@ -50,9 +57,22 @@ async function run() {
 
     app.get("/reviews", async (req, res) => {
       const id = req.query.serviceId;
-      const query = { serviceId: id };
+      const email = req.query.email;
+      let query = {};
+      if (id) {
+        query = { serviceId: id };
+      } else if (email) {
+        query = { email: email };
+      }
       const reviews = reviewCollection.find(query);
       const result = await reviews.toArray();
+      res.send(result);
+    });
+
+    app.delete("/reviews/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: ObjectId(id) };
+      const result = await reviewCollection.deleteOne(query);
       res.send(result);
     });
   } finally {
