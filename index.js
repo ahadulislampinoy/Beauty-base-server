@@ -82,6 +82,14 @@ async function run() {
       res.send(result);
     });
 
+    app.get("/serviceReviews", async (req, res) => {
+      const id = req.query.serviceId;
+      const query = { serviceId: id };
+      const reviews = reviewCollection.find(query, { sort: { date: -1 } });
+      const result = await reviews.toArray();
+      res.send(result);
+    });
+
     app.get("/myreviews", verifyJWT, async (req, res) => {
       let query = {};
       const email = req.query.email;
@@ -92,14 +100,6 @@ async function run() {
       if (email) {
         query = { email: email };
       }
-      const reviews = reviewCollection.find(query, { sort: { date: -1 } });
-      const result = await reviews.toArray();
-      res.send(result);
-    });
-
-    app.get("/serviceReviews", async (req, res) => {
-      const id = req.query.serviceId;
-      const query = { serviceId: id };
       const reviews = reviewCollection.find(query, { sort: { date: -1 } });
       const result = await reviews.toArray();
       res.send(result);
